@@ -14,11 +14,11 @@ for HOSTNAME in ${HOSTS} ; do
 sed -e "s/CN=/$HOSTNAME, /g" /var/tmp/certreportexp | grep -v ca-bundle > /var/tmp/certreportexp2
                 if diff /var/tmp/certreportexp /var/tmp/certreportexp2 >/dev/null ;
                         then
-                        echo "No Output in ${HOSTNAME} Cert-Check Command" | mail -s "No Output in ${HOSTNAME} Cert-Check" youremailaddress@cbre.com
+                        echo "No Output in ${HOSTNAME} Cert-Check Command" | mail -s "No Output in ${HOSTNAME} Cert-Check" youremailaddress@domain.com
                 fi
         cat /var/tmp/certreportexp2 >> /var/tmp/BIGIQcertreport
     else
-        echo "Unable to ssh to ${HOSTNAME}" | mail -s "Error" youremailaddress@cbre.com
+        echo "Unable to ssh to ${HOSTNAME}" | mail -s "Error" youremailaddress@domain.com
   fi
 done
 
@@ -29,7 +29,7 @@ sed -e "s/HOST2/HOST1\/02/g" -e "s/HOST4/HOST3\/4/g" -e "s/HOST6/HOST5\/6/g" -e 
 grep 'will expire' /var/tmp/BIGIQcertreport2 > /var/tmp/Upcoming_Expiring_certreport
 
 // In below command, Find lines that have Prod Load Blancers
-//Note: Searching REMOTE_HOST1 instead of REMOTE_HOST2 because we replaced REMOTE_HOST2 with REMOTE_HOST1/2 in sed command above
+// Note: Searching REMOTE_HOST1 instead of REMOTE_HOST2 because we replaced REMOTE_HOST2 with REMOTE_HOST1/2 in sed command above
 grep -E 'REMOTE_HOST1|REMOTE_HOST3|REMOTE_HOST5' /var/tmp/Upcoming_Expiring_certreport > /var/tmp/Prod_Expiring_certreport
 
 // In below command, Find lines that have Prod Load Blancers
@@ -47,7 +47,7 @@ if [ $(wc -l < "$/var/tmp/NonProd_Expiring_certreport2") -eq 0 ]; then
     echo "No Non Prod Cert expiring in next 30 days" > /var/tmp/NonProd_Expiring_certreport2
 fi
 
-mail -s "Non Prod Expiring Certificates" -r 'F5 Certs <reports@f5backups.cbre.com>' teamemailadd@cbre.com < /var/tmp/NonProd_Expiring_certreport2
-mail -s "Prod Expiring Certificates" -r 'F5 Certs <reports@f5backups.cbre.com>' teamemailadd@cbre.com < /var/tmp/Prod_Expiring_certreport2
+mail -s "Non Prod Expiring Certificates" -r 'F5 Certs <reports@f5backups.domain.com>' teamemailadd@domain.com < /var/tmp/NonProd_Expiring_certreport2
+mail -s "Prod Expiring Certificates" -r 'F5 Certs <reports@f5backups.domain.com>' teamemailadd@domain.com < /var/tmp/Prod_Expiring_certreport2
 
 rm -f /var/tmp/*certreport*
